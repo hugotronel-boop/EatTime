@@ -1,0 +1,1467 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Menu Principal - Recettes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- ================= NAVIGATION BAS ================= -->
+<nav class="bottom-nav">
+  <button class="nav-btn home active" id="menu-btn">
+    <small>Menu</small>
+  </button>
+
+  <button class="nav-btn add">
+    <span>+</span>
+  </button>
+</nav>
+
+<!-- ================= POPUP AJOUT RECETTE ================= -->
+<div id="add-recipe-popup" class="popup" style="display:none;">
+  <div class="popup-content">
+    <h2>Ajouter une recette</h2>
+
+    <input type="text" id="recipe-title" placeholder="Nom de la recette">
+
+    <!-- Catégories -->
+    <div class="category-selector">
+      <div class="category-circle active" data-cat="entrees">🥗</div>
+      <div class="category-circle" data-cat="plats">🍝</div>
+      <div class="category-circle" data-cat="desserts">🍰</div>
+      <div class="category-circle" data-cat="snacks">🍿</div>
+    </div>
+
+    <!-- Étoiles -->
+    <div class="star-selector">
+      <span class="star" data-value="1">★</span>
+      <span class="star" data-value="2">★</span>
+      <span class="star" data-value="3">★</span>
+      <span class="star" data-value="4">★</span>
+      <span class="star" data-value="5">★</span>
+    </div>
+
+    <!-- Temps -->
+    <div class="time-selector">
+      <div>
+        ⏱ <input type="number" id="prep-time" placeholder="Prépa (min)">
+      </div>
+      <div>
+        🔥 <input type="number" id="cook-time" placeholder="Cuisson (min)">
+      </div>
+    </div>
+
+    <!-- Personnes -->
+    <div class="servings-selector">
+      <div class="serving" data-value="2">1-4</div>
+      <div class="serving" data-value="4">4-6</div>
+      <div class="serving" data-value="6">6+</div>
+    </div>
+
+    <!-- Difficulté -->
+    <div class="level-selector">
+      <span class="level" data-value="Facile">😡</span>
+      <span class="level" data-value="Moyen">🙂</span>
+      <span class="level" data-value="Difficile">😎</span>
+    </div>
+
+    <!-- Ingrédients -->
+    <textarea id="ingredients" placeholder="Ingrédients (séparés par des virgules)"></textarea>
+
+    <!-- Préparation -->
+    <textarea id="steps" placeholder="Préparation (une étape par ligne)"></textarea>
+
+    <!-- Image -->
+    <label for="recipe-img" style="text-align:center; display:block; color:#ffd600; cursor:pointer;">
+      📷 Ajouter une image
+    </label>
+    <input type="file" id="recipe-img" accept="image/*" style="display:none;">
+    <img id="recipe-img-preview" style="width:100%; height:150px; object-fit:cover; border-radius:12px; display:none; margin-top:10px;">
+
+    <!-- Boutons -->
+    <div class="popup-buttons">
+      <button id="close-popup">Annuler</button>
+      <button id="submit-recipe">Valider</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PAGE PRINCIPALE ================= -->
+<div id="main-page">
+
+  <header class="header">
+    <div class="welcome-text">Hello !</div>
+    <h1 class="headline">
+      Qu'est-ce qu'on mange <span class="highlight">aujourd'hui ?</span>
+    </h1>
+  </header>
+
+  <!-- Recherche -->
+  <div class="search-container">
+    <div class="search-bar">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="text" placeholder="cherche ta recette">
+      <button class="search-btn">🔍</button>
+    </div>
+  </div>
+
+  <!-- Catégories -->
+  <div class="categories">
+    <button class="category-btn active" data-category="entrees">
+      <div class="icon-circle"><span>🥗</span></div>
+      <span>Entrées</span>
+    </button>
+
+    <button class="category-btn" data-category="plats">
+      <div class="icon-circle"><span>🍝</span></div>
+      <span>Plats principaux</span>
+    </button>
+
+    <button class="category-btn" data-category="desserts">
+      <div class="icon-circle"><span>🍰</span></div>
+      <span>Desserts</span>
+    </button>
+
+    <button class="category-btn" data-category="snacks">
+      <div class="icon-circle"><span>🍿</span></div>
+      <span>Snacks & Apéros</span>
+    </button>
+
+    <button class="category-btn" data-category="favoris">
+      <div class="icon-circle"><span>⭐</span></div>
+      <span>Recettes Favoris</span>
+    </button>
+  </div>
+
+  <!-- Liste recettes -->
+  <section class="popular-recipes">
+    <div class="recipe-list"></div>
+  </section>
+
+</div>
+
+<!-- ================= PAGE RECETTE ================= -->
+<div id="recipe-page" style="display:none;">
+
+  <div class="image-container">
+    <img id="background-image" alt="Image recette">
+  </div>
+
+  <div class="content ticket">
+    <span class="category">Plat</span>
+    <h1>Pizza Margherita</h1>
+    
+    <button id="favorite-btn" style="background:none; border:none; font-size:28px; cursor:pointer;">☆</button>
+
+    <div class="rating">
+      <span class="star active">★</span>
+      <span class="star active">★</span>
+      <span class="star active">★</span>
+      <span class="star active">★</span>
+      <span class="star">★</span>
+      <span class="rating-value">4.0</span>
+    </div>
+
+    <div class="recipe-stats">
+      <div class="stat-item">
+        <div class="stat-icon">⏱</div>
+        <div class="stat-text">
+          <strong>20</strong>
+          <span>min</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-text">
+          <strong>15</strong>
+          <span>min</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">👥</div>
+        <div class="stat-text">
+          <strong>2</strong>
+          <span>pers.</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-text">
+          <strong>Facile</strong>
+          <span>Niveau</span>
+        </div>
+      </div>
+    </div>
+
+    <h2>Ingrédients</h2>
+    <ul class="ingredients"></ul>
+
+    <h2>Préparation</h2>
+    <ol class="steps"></ol>
+
+  </div>
+</div>
+
+<!-- ================= CONFIRMATION ================= -->
+<div id="confirm-popup" style="display:none;">
+  <div class="confirm-content">
+    <p id="confirm-text">❌ Supprimer cette recette ?</p>
+    <div class="confirm-buttons">
+      <button id="confirm-cancel">Annuler</button>
+      <button id="confirm-ok">✅ Oui</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html><style>/* Reset & Base */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins', sans-serif;
+}
+
+body {
+  background: #fefcf5; /* Blanc cassé */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 80px; /* pour nav bar */
+}
+
+/* Header */
+.header {
+  padding: 20px;
+}
+.header-left, .header-right {
+  display: inline-block;
+  vertical-align: middle;
+}
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #f4b400;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.notification {
+  position: relative;
+  cursor: pointer;
+}
+.notification .dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  background: #f4b400;
+  border-radius: 50%;
+}
+
+/* Texte */
+.welcome-text {
+  color: #666;
+  margin-top: 10px;
+}
+.headline {
+  font-weight: 700;
+  font-size: 22px;
+  margin-top: 5px;
+}
+.headline .highlight {
+  color: #f4b400;
+}
+
+/* Search */
+.search-container {
+  display: flex;
+  padding: 15px 20px;
+  gap: 10px;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f2f2f2;
+  border-radius: 999px; /* capsule */
+  padding: 5px 10px;
+  gap: 5px;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 999px;
+}
+
+.search-btn {
+  background: #ffd600; /* jaune vif */
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Categories */
+.categories {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 15px 20px;
+}
+.category-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #eee;  /* gris par défaut */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 22px;
+}
+
+.icon-circle.active {
+  background: #ffd600; /* orange quand actif */
+  color: #333;
+}
+.icon-circle.yellow { background: #f4b400; color: #fff; }
+.icon-circle.gray { background: #eee; color: #333; }
+.category-btn span { font-weight: 600; font-size: 12px; color: #999; }
+.category-btn.active span { color: #000; }
+
+/* Recipes Grid */
+.popular-recipes {
+  padding: 10px 20px;
+}
+.recipe-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+.recipe-card {
+  background: #fff;
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.recipe-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+.recipe-card .badge-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.recipe-card .badge-bottom {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: #f4b400;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.recipe-card h3 {
+  font-weight: 700;
+  margin: 8px 10px 0 10px;
+}
+.recipe-card p {
+  font-size: 12px;
+  color: #666;
+  margin: 0 10px 10px 10px;
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  border-radius: 20px 20px 0 0;
+}
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+.nav-btn.add {
+  width: 50px;
+  height: 50px;
+  background: #eee;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+}
+.nav-btn.home.active {
+  background: #f4b400;
+  border-radius: 30px;
+  color: #fff;
+  padding: 5px 15px;
+}
+
+/* ===== Bottom Navigation ===== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.08);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 100;
+}
+
+.nav-btn {
+  width: 55px;
+  height: 55px;
+  background: #f4b400;
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: right;
+  transform: translateY(-20px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.nav-btn small {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.nav-btn.active {
+  color: #f4b400;
+  font-weight: 600;
+}
+
+/* bouton central + */
+.nav-btn.add {
+  width: 55px;
+  height: 55px;
+  background: #f4b400;
+  border-radius: 50%;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: right;
+  transform: translateY(-20px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* PAGE RECETTE */
+
+/* Reset & base */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+/* Body en flex pour pousser le ticket */
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #3a3a2a, #556b4f, #4b502c);
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* Image fixe derrière */
+.image-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.image-container img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Ticket scrollable */
+.content.ticket {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 25px;
+  border-radius: 25px 25px 0 0;
+  margin-top: 50vh; /* démarre sous l'image */
+  width: 98%;
+  max-width: 400px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+  flex: 1; /* prend tout l'espace restant jusqu'en bas */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* le contenu commence en haut du ticket */
+}
+
+/* Catégorie */
+.category{
+  background:#f4b400;
+  color:white;
+  padding:5px 15px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  display:inline-block;
+  margin-bottom:10px;
+}
+
+/* Titres */
+h1{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+h2{
+  font-size:16px;
+  font-weight:600;
+  margin:15px 0 8px;
+}
+
+/* Rating */
+.rating{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  margin-bottom:15px;
+}
+
+.star{
+  font-size:16px;
+  color:#ddd;
+}
+
+.star.active{
+  color:#f4b400;
+}
+
+.rating-value{
+  margin-left:6px;
+  font-size:13px;
+  color:#555;
+}
+
+/* Recipe stats / capsules */
+.recipe-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 25px 0;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 5px;
+  background: #FFD200;
+  border-radius: 40px;
+  color: #000;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.stat-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-text strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.stat-text span {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* Listes ingrédients et préparation */
+.ingredients li,
+.steps li{
+  list-style-position: inside;
+  padding-left: 1px;
+  font-size:13px;
+  margin-bottom:10px;
+  line-height:1.4;
+}
+
+/* MAIN PAGE */
+#main-page {
+  background: #ffffff;
+  width: 100%;
+  min-height: 100vh; /* toujours au moins la hauteur de l'écran */
+  padding-bottom: 80px; /* espace pour la nav */
+  box-sizing: border-box;
+}
+
+/* RECETTES GRID */
+.recipe-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 20px;
+}
+
+#main-page {
+  position: relative;
+  z-index: 1;
+}
+
+#add-recipe-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.5);
+  padding: 20px; /* ajoute un padding pour éviter que le contenu touche les bords */
+}
+
+.popup-content {
+  max-height: 90%; /* limite la hauteur du popup à 90% de l'écran */
+  overflow-y: auto; /* scroll vertical si le contenu dépasse */
+  width: 90%;
+  max-width: 450px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 20px 25px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.popup-content h2 {
+  text-align: center;
+  color: #ffd600;
+  margin-bottom: 10px;
+}
+
+/* Input & textarea */
+.popup-content input, .popup-content textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.popup-content textarea {
+  min-height: 120px;   /* hauteur minimum */
+  resize: vertical;    /* permet d'agrandir à la main */
+}
+
+.popup-content input:focus, .popup-content textarea:focus {
+  background: rgba(255,255,255,0.35);
+  box-shadow: 0 0 8px #ffd600;
+}
+
+/* Catégories */
+.category-selector {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.category-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.category-btn .icon-circle.active {
+  background: #ffd600; /* ton orange actuel */
+  color: #333;         /* pour que l'emoji ressorte */
+}
+
+/* Étoiles */
+.star-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 22px;
+  cursor: pointer;
+}
+.star.active {
+  color: #ffd600;
+}
+
+/* Temps */
+.time-selector {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+.time-selector div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Personnes */
+.servings-selector {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Niveau */
+.level-selector {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Boutons */
+.popup-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+.popup-buttons button {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#close-popup {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+#close-popup:hover {
+  background: rgba(255,255,255,0.35);
+}
+#submit-recipe {
+  background: #ffd600;
+  color: #333;
+}
+#submit-recipe:hover {
+  background: #f4b400;
+  color: #fff;
+}
+
+/* Personnes sélectionnées */
+.servings-selector .serving {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.2s;
+  font-size: 12px; /* <-- taille du texte ici */
+  text-align: center; /* pour que ça reste centré sur plusieurs lignes */
+  line-height: 1.2;   /* optionnel si tu veux un meilleur rendu */
+}.servings-selector .serving:hover {
+  transform: scale(1.2);
+}
+.servings-selector .serving.active {
+  border: 2px solid #ffd600;
+  box-shadow: 0 0 8px rgba(255,214,0,0.6);
+  background: rgba(255,255,255,0.35);
+}
+.category-circle.active {
+  border: 2px solid #ffd600;
+  box-shadow: 0 0 10px rgba(255,214,0,0.8);
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.1);
+  transition: all 0.2s;
+}
+.category-circle:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* Niveau sélectionné */
+.level-selector .level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.2s;
+}
+.level-selector .level:hover {
+  transform: scale(1.2);
+}
+.level-selector .level.active {
+  border: 2px solid #ffd600;
+  box-shadow: 0 0 8px rgba(255,214,0,0.6);
+  background: rgba(255,255,255,0.35);
+}
+
+#add-recipe-popup {
+  position: fixed;       /* bloque le popup sur tout l'écran */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;          /* plus haut que le bottom-nav (100) */
+  display: none;         /* déjà géré par JS */
+  justify-content: center; /* pour centrer le popup */
+  align-items: center;     /* idem */
+  background: rgba(0,0,0,0.5); /* légère ombre pour masquer le reste */
+}
+
+/* Bouton Modifier */
+.edit-btn {
+  padding: 5px 10px;
+  background-color: #ffd600; /* jaune */
+  color: #333;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 10px;
+  transition: 0.2s;
+}
+.edit-btn:hover {
+  background-color: #f4b400;
+  color: #fff;
+}
+
+/* Bouton Supprimer */
+.delete-btn {
+  padding: 5px 10px;
+  background-color: #ff4c4c; /* rouge */
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.delete-btn:hover {
+  background-color: #d12b2b;
+}
+
+#confirm-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+}
+
+.confirm-content {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  padding: 20px 25px;
+  border-radius: 20px;
+  text-align: center;
+  color: #fff;
+  max-width: 300px;
+}
+
+.confirm-content p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.confirm-buttons button {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#confirm-cancel {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+#confirm-cancel:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+#confirm-ok {
+  background: #ffd600;
+  color: #333;
+}
+#confirm-ok:hover {
+  background: #f4b400;
+  color: #fff;
+}</style><script>document.addEventListener("DOMContentLoaded", () => {
+
+  // ===============================
+  // DONNÉES RECETTES
+  // ===============================
+  const recipes = {
+    entrees: [
+      { title: "Salade César", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141", category: "Entrée", rating: 4, prepTime: 15, cookTime: 0, servings: 2, level: "Facile", ingredients: ["Salade", "Poulet", "Croutons"], steps: ["Lave la salade", "Coupe le poulet"], isFavorite: false },
+      { title: "Soupe de légumes", img: "https://images.unsplash.com/photo-1604908177521-23b68f891b82", category: "Entrée", rating: 5, prepTime: 10, cookTime: 30, servings: 4, level: "Facile", ingredients: ["Carottes", "Poireaux"], steps: ["Coupe les légumes", "Fais bouillir"], isFavorite: false }
+    ],
+    plats: [
+      { title: "Poulet curry", img: "https://images.unsplash.com/photo-1604908554163-3c90bb8d0f0a", category: "Plat", rating: 4, prepTime: 20, cookTime: 40, servings: 3, level: "Moyen", ingredients: ["Poulet", "Curry"], steps: ["Fais dorer le poulet"], isFavorite: false },
+      { title: "Pâtes carbonara", img: "https://images.unsplash.com/photo-1589308078056-fbb9c6f95c3d", category: "Plat", rating: 5, prepTime: 10, cookTime: 10, servings: 2, level: "Facile", ingredients: ["Pâtes", "Lardons"], steps: ["Cuire les pâtes"], isFavorite: false }
+    ],
+    desserts: [],
+    snacks: [],
+    favoris: []
+  };
+
+  // --- CHARGEMENT DU LOCALSTORAGE ---
+  const savedRecipes = localStorage.getItem('myRecipes');
+  if (savedRecipes) {
+    Object.assign(recipes, JSON.parse(savedRecipes));
+  }
+  // ----------------------------------
+
+  let editingRecipe = null; 
+  let currentOpenRecipe = null; 
+  let selectedCategory = "entrees";
+  let selectedRating = 0;
+  let selectedServings = 1;
+  let selectedLevel = "Facile";
+
+  const mainPage = document.getElementById("main-page");
+  const recipePage = document.getElementById("recipe-page");
+  const recipeList = document.querySelector(".recipe-list");
+  const popup = document.getElementById("add-recipe-popup");
+  const imgInput = document.getElementById("recipe-img");
+  const imgPreview = document.getElementById("recipe-img-preview");
+  const favoriteBtn = document.getElementById("favorite-btn");
+
+  // ===============================
+  // FONCTION RESET UNIQUE
+  // ===============================
+  function resetPopupFields() {
+    const fields = ["recipe-title", "prep-time", "cook-time", "ingredients", "steps"];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+
+    if (imgPreview) {
+      imgPreview.style.display = "none";
+      imgPreview.src = "";
+    }
+    if (imgInput) imgInput.value = "";
+
+    document.querySelectorAll(".category-circle").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".star-selector .star").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".servings-selector .serving").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".level-selector .level").forEach(l => l.classList.remove("active"));
+    
+    selectedRating = 0;
+    selectedServings = 1;
+    selectedLevel = "Facile";
+    selectedCategory = "entrees";
+  }
+
+  // ===============================
+  // GESTION FAVORIS
+  // ===============================
+  function updateFavoriteBtnUI(recipe) {
+    if (!favoriteBtn) return;
+    favoriteBtn.textContent = recipe.isFavorite ? "⭐" : "☆";
+  }
+
+  if (favoriteBtn) {
+    favoriteBtn.addEventListener("click", () => {
+      if (!currentOpenRecipe) return;
+
+      currentOpenRecipe.isFavorite = !currentOpenRecipe.isFavorite;
+
+      if (currentOpenRecipe.isFavorite) {
+        const alreadyIn = recipes.favoris.some(r => r.title === currentOpenRecipe.title);
+        if (!alreadyIn) recipes.favoris.push(currentOpenRecipe);
+      } else {
+        recipes.favoris = recipes.favoris.filter(r => r.title !== currentOpenRecipe.title);
+      }
+
+      // Sauvegarde après changement favori
+      localStorage.setItem('myRecipes', JSON.stringify(recipes));
+
+      updateFavoriteBtnUI(currentOpenRecipe);
+      displayRecipes(selectedCategory);
+    });
+  }
+
+  // ===============================
+  // GESTION POPUP
+  // ===============================
+  const addBtnNav = document.querySelector(".nav-btn.add");
+  if (addBtnNav) {
+    addBtnNav.addEventListener("click", () => {
+      resetPopupFields();
+      editingRecipe = null;
+      if (popup) popup.style.display = "flex";
+    });
+  }
+
+  const closePopup = document.getElementById("close-popup");
+  if (closePopup) {
+    closePopup.addEventListener("click", () => {
+      resetPopupFields();
+      editingRecipe = null;
+      if (popup) popup.style.display = "none";
+    });
+  }
+
+  document.querySelectorAll(".category-circle").forEach(c => {
+    c.addEventListener("click", () => {
+      document.querySelectorAll(".category-circle").forEach(cc => cc.classList.remove("active"));
+      c.classList.add("active");
+      selectedCategory = c.dataset.cat || "entrees";
+    });
+  });
+
+  document.querySelectorAll(".star-selector .star").forEach(s => {
+    s.addEventListener("click", () => {
+      selectedRating = parseInt(s.dataset.value) || 0;
+      document.querySelectorAll(".star-selector .star").forEach(star => {
+        star.classList.toggle("active", parseInt(star.dataset.value) <= selectedRating);
+      });
+    });
+  });
+
+  document.querySelectorAll(".servings-selector .serving").forEach(s => {
+    s.addEventListener("click", () => {
+      document.querySelectorAll(".servings-selector .serving").forEach(ss => ss.classList.remove("active"));
+      s.classList.add("active");
+      selectedServings = parseInt(s.dataset.value) || 1;
+    });
+  });
+
+  document.querySelectorAll(".level-selector .level").forEach(l => {
+    l.addEventListener("click", () => {
+      document.querySelectorAll(".level-selector .level").forEach(ll => ll.classList.remove("active"));
+      l.classList.add("active");
+      selectedLevel = l.dataset.value || "Facile";
+    });
+  });
+
+  if (imgInput && imgPreview) {
+    imgInput.addEventListener("change", () => {
+      const file = imgInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // ===============================
+  // VALIDATION / ENREGISTREMENT
+  // ===============================
+  const submitBtn = document.getElementById("submit-recipe");
+  if (submitBtn) {
+    submitBtn.addEventListener("click", () => {
+      const titleEl = document.getElementById("recipe-title");
+      const title = titleEl ? titleEl.value.trim() : "";
+      
+      if (!title) { alert("Merci de mettre un titre à la recette !"); return; }
+
+      const prepVal = document.getElementById("prep-time")?.value;
+      const cookVal = document.getElementById("cook-time")?.value;
+      const ingVal = document.getElementById("ingredients")?.value;
+      const stepVal = document.getElementById("steps")?.value;
+
+      const categoryMap = { entrees: "Entrée", plats: "Plat", desserts: "Dessert", snacks: "Snack" };
+      
+      let finalImg = "https://via.placeholder.com/150";
+      if (imgPreview && imgPreview.src && imgPreview.style.display !== "none") {
+         finalImg = imgPreview.src;
+      } else if (editingRecipe && editingRecipe.recipe.img) {
+         finalImg = editingRecipe.recipe.img;
+      }
+
+      const newRecipe = {
+        title,
+        img: finalImg,
+        category: categoryMap[selectedCategory] || "Autre",
+        rating: selectedRating,
+        prepTime: parseInt(prepVal) || 0,
+        cookTime: parseInt(cookVal) || 0,
+        servings: selectedServings,
+        level: selectedLevel,
+        ingredients: ingVal ? ingVal.split(",").map(i => i.trim()).filter(i => i) : [],
+        steps: stepVal ? stepVal.split("\n").map(s => s.trim()).filter(s => s) : [],
+        isFavorite: editingRecipe ? editingRecipe.recipe.isFavorite : false
+      };
+
+      if (editingRecipe) {
+        recipes[editingRecipe.category][editingRecipe.index] = newRecipe;
+        if (recipePage && recipePage.style.display === "block") {
+          openRecipe(newRecipe, editingRecipe.category, editingRecipe.index);
+        }
+        editingRecipe = null;
+      } else {
+        if (!recipes[selectedCategory]) recipes[selectedCategory] = [];
+        recipes[selectedCategory].push(newRecipe);
+      }
+
+      // Sauvegarde après ajout ou édition
+      localStorage.setItem('myRecipes', JSON.stringify(recipes));
+
+      displayRecipes(selectedCategory);
+      if (popup) popup.style.display = "none";
+      resetPopupFields();
+    });
+  }
+
+  // ===============================
+  // AFFICHAGE RECETTES
+  // ===============================
+  function displayRecipes(category) {
+    if (!recipeList) return;
+    recipeList.innerHTML = "";
+    const catKey = category.toLowerCase();
+    const catRecipes = recipes[catKey] || [];
+
+    if (catRecipes.length === 0) {
+      recipeList.innerHTML = '<p class="empty">Aucune recette ici 👀</p>';
+      return;
+    }
+
+    catRecipes.forEach((r, i) => {
+      const card = document.createElement("div");
+      card.className = "recipe-card";
+      card.innerHTML = `
+        <img src="${r.img || 'https://via.placeholder.com/150'}" alt="${r.title}">
+        <h3>${r.title}</h3>
+        <p>${r.category}</p>
+      `;
+      card.addEventListener("click", () => openRecipe(r, catKey, i));
+      recipeList.appendChild(card);
+    });
+  }
+
+  // ===============================
+  // OUVRIR UNE RECETTE
+  // ===============================
+  function openRecipe(r, category, index) {
+    if (!recipePage) return;
+    currentOpenRecipe = r; 
+
+    const bgImg = document.getElementById("background-image");
+    if (bgImg) bgImg.src = r.img || 'https://via.placeholder.com/150';
+    
+    const h1 = recipePage.querySelector("h1");
+    if (h1) h1.textContent = r.title;
+    
+    const catLabel = recipePage.querySelector(".category");
+    if (catLabel) catLabel.textContent = r.category || category;
+
+    updateFavoriteBtnUI(r);
+
+    const stars = recipePage.querySelectorAll(".rating .star");
+    stars.forEach((star, j) => star.classList.toggle("active", r.rating && j < r.rating));
+    const ratingVal = recipePage.querySelector(".rating-value");
+    if (ratingVal) ratingVal.textContent = r.rating ? r.rating.toFixed(1) : "0.0";
+
+    const stats = [r.prepTime || 0, r.cookTime || 0, r.servings || 1, r.level || "Facile"];
+    const statSpans = recipePage.querySelectorAll(".recipe-stats .stat-text strong");
+    statSpans.forEach((el, j) => { if (el) el.textContent = stats[j]; });
+
+    const ingredientsList = recipePage.querySelector(".ingredients");
+    if (ingredientsList) {
+      ingredientsList.innerHTML = "";
+      (r.ingredients || []).forEach(ing => {
+        const li = document.createElement("li");
+        li.textContent = ing;
+        ingredientsList.appendChild(li);
+      });
+    }
+
+    const stepsList = recipePage.querySelector(".steps");
+    if (stepsList) {
+      stepsList.innerHTML = "";
+      (r.steps || []).forEach(step => {
+        const li = document.createElement("li");
+        li.textContent = step;
+        stepsList.appendChild(li);
+      });
+    }
+
+    const ticketContent = recipePage.querySelector(".content.ticket");
+    if (ticketContent) {
+      let actionContainer = recipePage.querySelector(".recipe-actions");
+      if (!actionContainer) {
+        actionContainer = document.createElement("div");
+        actionContainer.className = "recipe-actions";
+        ticketContent.appendChild(actionContainer);
+      }
+      actionContainer.innerHTML = "";
+
+      const modBtn = document.createElement("button");
+      modBtn.textContent = "Modifier";
+      modBtn.className = "edit-btn";
+      modBtn.onclick = () => {
+        editingRecipe = { recipe: r, category, index };
+        document.getElementById("recipe-title").value = r.title;
+        document.getElementById("prep-time").value = r.prepTime || "";
+        document.getElementById("cook-time").value = r.cookTime || "";
+        document.getElementById("ingredients").value = r.ingredients ? r.ingredients.join(", ") : "";
+        document.getElementById("steps").value = r.steps ? r.steps.join("\n") : "";
+        
+        document.querySelectorAll(".category-circle").forEach(c => {
+          c.classList.toggle("active", c.dataset.cat === category);
+        });
+        selectedCategory = category;
+        
+        document.querySelectorAll(".star-selector .star").forEach(s => s.classList.toggle("active", s.dataset.value <= (r.rating || 0)));
+        selectedRating = r.rating || 0;
+        
+        document.querySelectorAll(".servings-selector .serving").forEach(s => s.classList.toggle("active", s.dataset.value == (r.servings || 1)));
+        selectedServings = r.servings || 1;
+        
+        document.querySelectorAll(".level-selector .level").forEach(l => l.classList.toggle("active", l.dataset.value === (r.level || "Facile")));
+        selectedLevel = r.level || "Facile";
+
+        if (imgPreview && r.img) {
+          imgPreview.src = r.img;
+          imgPreview.style.display = "block";
+        }
+        if (popup) popup.style.display = "flex";
+      };
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Supprimer";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = () => {
+        showConfirm(`❌ Supprimer "${r.title}" ?`, () => {
+          recipes[category].splice(index, 1);
+          recipes.favoris = recipes.favoris.filter(fav => fav.title !== r.title);
+          
+          // Sauvegarde après suppression
+          localStorage.setItem('myRecipes', JSON.stringify(recipes));
+
+          displayRecipes(category);
+          recipePage.style.display = "none";
+          if (mainPage) mainPage.style.display = "block";
+        });
+      };
+
+      actionContainer.appendChild(modBtn);
+      actionContainer.appendChild(delBtn);
+    }
+
+    if (mainPage) mainPage.style.display = "none";
+    recipePage.style.display = "block";
+  }
+
+  // ===============================
+  // CONFIRMATION POPUP
+  // ===============================
+  function showConfirm(message, onConfirm) {
+    const confirmPopup = document.getElementById("confirm-popup");
+    const text = document.getElementById("confirm-text");
+    const btnOk = document.getElementById("confirm-ok");
+    const btnCancel = document.getElementById("confirm-cancel");
+
+    if (!confirmPopup || !text || !btnOk || !btnCancel) return;
+
+    text.textContent = message;
+    confirmPopup.style.display = "flex";
+
+    const okHandler = () => {
+      confirmPopup.style.display = "none";
+      onConfirm();
+      btnOk.removeEventListener("click", okHandler);
+    };
+
+    const cancelHandler = () => {
+      confirmPopup.style.display = "none";
+      btnOk.removeEventListener("click", okHandler);
+      btnCancel.removeEventListener("click", cancelHandler);
+    };
+
+    btnOk.addEventListener("click", okHandler, { once: true });
+    btnCancel.addEventListener("click", cancelHandler, { once: true });
+  }
+
+  // ===============================
+  // RECHERCHE & RETOUR
+  // ===============================
+  const backBtn = document.getElementById("back-btn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (recipePage) recipePage.style.display = "none";
+      if (mainPage) mainPage.style.display = "block";
+      currentOpenRecipe = null;
+    });
+  }
+
+  const searchBtn = document.querySelector(".search-btn");
+  const searchInput = document.querySelector(".search-bar input");
+  if (searchBtn && searchInput) {
+    searchBtn.addEventListener("click", () => {
+      const query = searchInput.value.toLowerCase().trim();
+      if (!query || !recipeList) return;
+
+      recipeList.innerHTML = "";
+      let found = false;
+      Object.entries(recipes).forEach(([catName, catArray]) => {
+        catArray.forEach((r, idx) => {
+          if (r.title.toLowerCase().includes(query)) {
+            found = true;
+            const card = document.createElement("div");
+            card.className = "recipe-card";
+            card.innerHTML = `<img src="${r.img || 'https://via.placeholder.com/150'}" alt="${r.title}">
+                              <h3>${r.title}</h3><p>${r.category}</p>`;
+            card.addEventListener("click", () => openRecipe(r, catName, idx));
+            recipeList.appendChild(card);
+          }
+        });
+      });
+      if (!found) recipeList.innerHTML = '<p class="empty">Aucune recette trouvée 😅</p>';
+    });
+  }
+
+  // ===============================
+  // CATEGORIES PRINCIPALES
+  // ===============================
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".category-btn").forEach(b => {
+        b.classList.remove("active");
+        const icon = b.querySelector(".icon-circle");
+        if (icon) icon.classList.remove("active");
+      });
+      btn.classList.add("active");
+      const icon = btn.querySelector(".icon-circle");
+      if (icon) icon.classList.active;
+      
+      selectedCategory = btn.dataset.category;
+      displayRecipes(selectedCategory);
+    });
+  });
+
+  const menuBtn = document.getElementById("menu-btn");
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      if (recipePage) recipePage.style.display = "none";
+      if (mainPage) mainPage.style.display = "block";
+      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+      menuBtn.classList.add("active");
+      currentOpenRecipe = null;
+    });
+  }
+
+  displayRecipes(selectedCategory);
+});
+</script>
